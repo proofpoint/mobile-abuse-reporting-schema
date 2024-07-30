@@ -1,0 +1,5 @@
+Contact: mailto:security@proofpoint.com
+Preferred-Languages: en
+Policy: https://proofpoint.com/us/security
+Acknowledgments: https://proofpoint.com/us/security/hall-of-fame
+Hiring: https://proofpoint.com/careers
