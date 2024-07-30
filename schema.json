@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/proofpoint/mobile-abuse-reporting-schema/v1/schema.json",
+  "title": "Mobile Abuse Reporting Schema",
+  "description": "Specification for reporting mobile messaging abuse and misclassified abuse.",
+  "$copyright": "Copyright ©2024 by Proofpoint Inc.",
+  "$license": "To the extent that Proofpoint, Inc. (Contributor) holds a copyright interest in its Mobile Abuse Reporting Standard JSON Schema (Contribution), such Contributor grants you a perpetual, irrevocable, non-exclusive, royalty-free, worldwide copyright license, with the right to directly and indirectly sublicense, to copy, publish, and distribute the Contribution in any way, and to develop derivative works, solely for the purpose of developing and promoting the adoption and use of the Contribution and enabling the implementation of the same by licensees.  To the extent that use or implementation of the Contribution would necessarily infringe any patent held by Contributor, such Contributor grants you a perpetual, irrevocable, non-exclusive, royalty-free, worldwide patent license, with the right to directly and indirectly sublicense, solely for the purpose of developing and promoting the adoption and use of the Contribution and enabling the implementation of the same by licensees.",
+  "type": "object",
+  "properties": {
+    "v": {
+      "description": "Version of the Proofpoint Mobile Messaging Abuse Reporting schema",
+      "type": "string",
+      "const": "1"
+    },
+    "i": {
+      "description": "*Optional* *Encouraged* A UUIDv4 unique to the conversation. Used for correlating multiple messages related to a single conversation across disparate reports.",
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "examples": [
+        "20275d91-690f-4908-a191-f1a16d0a770b"
+      ]
+    },
+    "u": {
+      "description": "User-Agent in the format of '<Organization>/<Application>/Version' where <Organization> and <Application> are any Unicode letter (\\p{L}) or number (\\p{N}) codepoint(s), and version is any ASCII alphanumeric string with periods, hyphens, or underscores.",
+      "type": "string",
+      "pattern": "^(?i:[\\p{L}\\p{N}]{1,64}/[\\p{L}\\p{N}]{1,64}/[a-zA-Z0-9._-]{1,64})$",
+      "examples": [
+        "OrganizationA/Messages/2.3-alpha",
+        "OrganizationB/Messages/v2",
+        "OrganizationC/Messenger/3.6rc",
+        "OrganizationD/Messenger/1.2_ga"
+      ]
+    },
+    "s": {
+      "description": "Address of original message sender (MSISDN, email, short code, alphanumeric SenderID) which is being reported as spam or legit.",
+      "type": "string",
+      "pattern": "^.{1,350}$",
+      "examples": [
+        "+1234567890",
+        "+447700900123",
+        "+819012345678",
+        "example1@example.com",
+        "example2@example.com",
+        "example3@example.com",
+        "12345",
+        "67890",
+        "54321",
+        "COMPANY1",
+        "COMPANY2",
+        "COMPANY3"
+      ]
+    },
+    "r": {
+      "description": "*Optional* *Encouraged* Address or hashed address of the message reporter (MSISDN, email, unique device ID, SHA3-256) who received the message from the sender.",
+      "type": "string",
+      "pattern": "^.{1,350}$",
+      "examples": [
+        "+15551234567",
+        "+447712345678",
+        "+61876543210",
+        "user1@company.net",
+        "user2@company.net",
+        "user3@company.net",
+        "3f11961ff9b2c08df8b71943255fdb607a6921ef77bf08c833f6d03366704bda"
+      ]
+    },
+    "d": {
+      "description": "Disposition of report",
+      "type": "string",
+      "pattern": "^(?i:spam|legit)$",
+      "default": "spam",
+      "examples": [
+        "spam",
+        "SPAM",
+        "legit",
+        "LEGIT"
+      ]
+    },
+    "m": {
+      "description": "The following fields make up a message object.",
+      "type": "object",
+      "properties": {
+        "p": {
+          "description": "Original messaging protocol abuse received over.",
+          "type": "string",
+          "pattern": "^(?i:sms|mms|rcs)$",
+          "examples": [
+            "sms",
+            "SMS",
+            "mms",
+            "MMS",
+            "rcs",
+            "RCS"
+          ]
+        },
+        "t": {
+          "description": "Timestamp of the message receipt time in RFC3339 UTC format, truncated to the nearest second",
+          "type": "string",
+          "pattern": "^(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])T(?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)Z$",
+          "examples": [
+            "2024-03-12T15:45:22Z"
+          ]
+        },
+        "c": {
+          "description": "Message body as a UTF-8 string, single or multipart MIME-encoded content.",
+          "type": "string",
+          "pattern": ".+",
+          "examples": [
+            "Contact 888-555-000 immediately to claim your prize!",
+            "Elevate your look at TrendSetter.com! Unleash your unique style with our exclusive collection. Shop now, before it's gone!",
+            "Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\nBuy v1agra here: http://example.net",
+            "Content-Type: multipart/mixed; boundary=\"boundary-example\"\r\n\r\n--boundary-example\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\n\r\nThis is the text part of the message.\r\n\r\n--boundary-example\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: base64\r\n\r\n<base64_encoded_image_data>\r\n\r\n--boundary-example--"
+          ]
+        }
+      },
+      "required": [
+        "p",
+        "t",
+        "c"
+      ]
+    }
+  },
+  "required": [
+    "v",
+    "u",
+    "s",
+    "m"
+  ],
+  "examples": [
+    {
+      "v": "1",
+      "u": "OrganizationA/Messages/2.3-alpha",
+      "s": "+1234567890",
+      "d": "spam",
+      "m": {
+        "p": "sms",
+        "t": "2024-03-12T15:45:22Z",
+        "c": "Elevate your look at TrendSetter.com! Unleash your unique style with our exclusive collection. Shop now, before it's gone!"
+      }
+    },
+    {
+      "v": "1",
+      "u": "OrganizationB/Messenger/2.2.3",
+      "s": "+1234567890",
+      "r": "+1555123456",
+      "d": "legit",
+      "m": {
+        "p": "mms",
+        "t": "2024-03-12T15:45:22Z",
+        "c": "Content-Type: multipart/mixed; boundary=\"boundary-example\"\r\n\r\n--boundary-example\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\n\r\nThis is the text part of the message.\r\n\r\n--boundary-example\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: base64\r\n\r\n<base64_encoded_image_data>\r\n\r\n--boundary-example--"
+      }
+    },
+    {
+      "v": "1",
+      "i": "20275d91-690f-4908-a191-f1a16d0a770b", 
+      "u": "OrganizationC/Messenger/v2-alpha",
+      "s": "+447700900123",
+      "r": "ec4333c7b178abddf8885c1c357bfe952c9c886a53d4ad93f936fb42c0f7588e",
+      "m": {
+        "p": "rcs",
+        "t": "2024-03-12T15:45:22Z",
+        "c": "Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\nBuy v1agra here: http://example.net"
+      }
+    },
+    {
+      "v": "1",
+      "u": "OrganizationD/Messages/3.6.0GA",
+      "s": "+1234567890",
+      "m": {
+        "p": "sms",
+        "t": "2024-03-12T15:45:22Z",
+        "c": "Contact 888-555-000 immediately to claim your prize!"
+      }
+    }
+  ]
+}
